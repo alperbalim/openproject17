@@ -77,8 +77,34 @@ $content-padding: 10px
         text-transform: uppercase
 
   td.name
-    @include text-shortener
-    a
+    // Use flexbox to allow name to shrink while badge stays visible
+    display: flex
+    align-items: center
+    gap: 0.5rem
+
+    // Hierarchy icon doesn't flex
+    > .projects-table--hierarchy-icon
+      flex: 0 0 auto
+
+    // The name (link or text) that can shrink
+    > span.projects-table--name-text
+      flex: 0 1 auto
+      @include text-shortener
+      white-space: nowrap
+
+      // The archived label inside
+      > span.archived-label
+        flex: 0 0 auto
+
+      // Link inside should inherit truncation
+      > a
+        display: block
+        @include text-shortener
+        white-space: nowrap
+
+    // The workspace badge that stays visible
+    > .projects-table--name-badge
+      flex: 0 0 auto
       white-space: nowrap
 
   td.project--hierarchy

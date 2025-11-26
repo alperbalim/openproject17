@@ -152,19 +152,30 @@ module Projects
     end
 
     def name
-      content = [content_tag(:i, "", class: "projects-table--hierarchy-icon")]
+      content = [
+        hierarchy_icon,
+        name_link_section,
+        workspace_type_badge
+      ].compact_blank
 
-      if project.archived?
-        content << content_tag(:span, I18n.t("project.archive.archived"), class: "archived-label")
-      end
+      safe_join(content)
+    end
 
-      content << helpers.link_to_project(project, {}, { data: { turbo: false } }, false)
+    def hierarchy_icon
+      content_tag(:i, "", class: "projects-table--hierarchy-icon")
+    end
 
-      if workspace_type_badge && OpenProject::FeatureDecisions.portfolio_models_active?
-        content << workspace_type_badge
-      end
+    def name_link_section
+      parts = []
+      parts << archived_label if project.archived?
+      parts << " "
+      parts << helpers.link_to_project(project, {}, { data: { turbo: false } }, false)
 
-      safe_join(content, " ")
+      content_tag(:span, safe_join(parts), class: "projects-table--name-text")
+    end
+
+    def archived_label
+      content_tag(:span, I18n.t("project.archive.archived"), class: "archived-label")
     end
 
     def project_status
@@ -429,10 +440,11 @@ module Projects
     end
 
     def workspace_type_badge
+      return unless OpenProject::FeatureDecisions.portfolio_models_active?
       # Only show icon and type for non-project workspaces
       return unless project.workspace_type.in?(["portfolio", "program"])
 
-      render(Primer::Beta::Text.new(color: :muted)) do
+      render(Primer::Beta::Text.new(color: :muted, classes: "projects-table--name-badge")) do
         icon = render(Primer::Beta::Octicon.new(icon: helpers.workspace_icon(project.workspace_type)))
         safe_join([icon, " ", I18n.t(:"label_#{project.workspace_type}")])
       end
