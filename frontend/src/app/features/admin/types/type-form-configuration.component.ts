@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { I18nService } from 'core-app/core/i18n/i18n.service';
 import {
   ExternalRelationQueryConfigurationService,
@@ -40,6 +40,8 @@ export const emptyTypeGroup = '__empty';
   standalone: false,
 })
 export class TypeFormConfigurationComponent extends UntilDestroyedMixin implements OnInit, AfterViewInit, OnDestroy {
+  @Input() focusedKey:string|null = null;
+
   public text = {
     drag_to_activate: this.I18n.t('js.admin.type_form.drag_to_activate'),
     reset: this.I18n.t('js.admin.type_form.reset_to_defaults'),

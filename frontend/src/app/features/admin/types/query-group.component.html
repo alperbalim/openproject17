@@ -1,15 +1,32 @@
-<div class="type-form-conf-group type-form-query-group">
-    <div class="group-head">
-        <span class="group-handle icon-drag-handle"></span>
-        <op-group-edit-in-place [name]="group.name"
-                (onValueChange)="rename($event)"
-                class="group-name" />
-        <span class="delete-group icon-small icon-close" (click)="deleteGroup.emit()"></span>
-    </div>
-    <div class="type-form-query">
-        <span class="type-form-query-group--edit-button" (click)="editQuery.emit()">
-          <op-icon icon-classes="button--icon icon-edit" />
-            {{ text.edit_query }}
-        </span>
-    </div>
+<div class="Box Box--condensed type-form-conf-group">
+  <div class="Box-header group-head">
+    <span
+      aria-label="Drag to reorder"
+      class="group-handle-button"
+      role="button">
+      <primer-grabber-icon class="group-handle" size="16"/>
+    </span>
+    <op-group-edit-in-place class="Box-title group-name"
+            [name]="group.name"
+            (onValueChange)="rename($event)" />
+    <primer-icon-button
+      aria-label="Delete group"
+      class="group-delete-button"
+      icon="x"
+      size="small"
+      tooltip-direction="sw"
+      variant="invisible"
+      (click)="deleteGroup.emit()"
+    />
+  </div>
+  <div class="Box-footer group-foot">
+    <span class="type-form-query-group--edit-button" >
+      <primer-button
+        leading-icon="pencil"
+        variant="secondary"
+        (click)="editQuery.emit()">
+        {{text.edit_query}}
+      </primer-button>
+    </span>
+  </div>
 </div> <!-- END query group -->
