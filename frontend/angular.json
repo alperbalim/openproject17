@@ -1,5 +1,4 @@
 {
-    "builder": "@angular-builders/custom-webpack:karma",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -149,9 +148,7 @@
             "karmaConfig": "./karma.conf.js",
             "tsConfig": "tsconfig.spec.json",
             "scripts": [],
-            "styles": [
-              "@primer/css/dist/primer.css"
-            ],
+            "styles": [],
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/assets/sass/"
