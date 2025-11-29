@@ -4,6 +4,10 @@
 module.exports = function (config) {
   config.set({
     basePath: '',
+    // Prevent Angular builder from picking up React custom-elements tests
+    exclude: [
+      'src/custom-elements/**'
+    ],
     files: [
       // I18n.js is provided by the Asset pipeline,
       // which is unavailable for unit tests.
@@ -32,7 +36,8 @@ module.exports = function (config) {
       ]
     },
     preprocessors: {
-      'src/**/*.ts': 'coverage'
+      'src/app/**/*.ts': 'coverage',
+      'src/stimulus/**/*.ts': 'coverage'
     },
     angularCli: {
       environment: 'dev'

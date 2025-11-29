@@ -3,21 +3,36 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jasmine"
-     ]
+      "jasmine",
+      "node"
+    ],
+    "typeRoots": [
+      "src/typings",
+      "node_modules/@types"
+    ],
+    "target": "ES2022",
+    "strict": false,
+    "allowUmdGlobalAccess": true,
+    "noImplicitAny": false
   },
   "files": [
     "src/test.ts",
-    "src/polyfills.ts"
+    "src/typings/karma-globals.d.ts",
+    "src/typings.d.ts",
+    
   ],
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-    "src/app/**/*.ts"
+    "src/app/**/*.ts",
+    "src/stimulus/**/*.ts",
+    "src/typings/**/*.d.ts"
   ],
   "exclude": [
+    "src/custom-elements/**",
+    "src/react/**",
+    "src/test-stubs/**",
+    "src/**/*.vitest.ts",
     "src/**/*.vitest.spec.ts",
-    "src/**/__tests__/**/*",
-    "src/test-stubs/**/*"
+    "src/**/*.jest.ts",
+    "src/**/*.jest.spec.ts"
   ]
 }

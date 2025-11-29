@@ -34,5 +34,11 @@ getTestBed().initTestEnvironment(
 // Load all non-Vitest/Jest spec files. Exclude files ending with vitest.spec.ts or jest.spec.ts
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const requireAny: any = require as any;
-const context = requireAny.context('./', true, /^(?!.*(vitest|jest)\.spec\.ts$).*\.spec\.ts$/);
+// Only include specs under src/, exclude custom-elements subtree and Vitest/Jest patterns
+// Limit Jasmine specs to Angular app and Stimulus; exclude vitest/jest and custom-elements
+const context = requireAny.context(
+  './src/',
+  true,
+  /^(app|stimulus)\/.*(?<!\.(vitest|jest)\.spec\.ts)\.spec\.ts$/,
+);
 context.keys().forEach(context);
