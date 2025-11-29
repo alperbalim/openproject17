@@ -16,8 +16,8 @@
               {{text.label_group}}
             </button>
             <primer-action-list slot="overlay">
-              <primer-action-list-item (click)="createGroup('attribute', '')">{{text.add_group}}</primer-action-list-item>
-              <primer-action-list-item (click)="addGroupAndOpenQuery()">{{text.add_table}}</primer-action-list-item>
+              <button slot="item" id="add-group" (click)="createGroup('attribute','')">{{ text.add_group }}</button>
+              <button slot="item" id="add-table" (click)="addGroupAndOpenQuery()">{{ text.add_table }}</button>
             </primer-action-list>
           </primer-action-menu>
         </li>

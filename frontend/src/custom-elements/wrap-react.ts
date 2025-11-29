@@ -357,8 +357,17 @@ export function defineReactElement<Props extends object = object>(
     }
 
     disconnectedCallback() {
-      this._reactRoot?.unmount();
+      // Avoid unmounting during an active React render; defer unmount
+      const root = this._reactRoot;
+      this._reactRoot = undefined;
       this._observer?.disconnect();
+      setTimeout(() => {
+        try {
+          root?.unmount();
+        } catch {
+          /* noop */
+        }
+      }, 0);
     }
 
     private _adoptStyles(root:ShadowRoot, styles:(string | CSSStyleSheet)[]) {
