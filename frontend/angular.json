@@ -7,10 +7,6 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "sass"
-      "customWebpackConfig": {
-        "path": "webpack.test.config.js",
-        "replaceDuplicatePlugins": true
-      },
         }
       },
       "root": "",
