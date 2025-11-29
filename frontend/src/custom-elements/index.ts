@@ -3,6 +3,32 @@ import { PencilIcon, PlusIcon, GrabberIcon, UndoIcon, XIcon } from '@primer/octi
 
 import { defineReactElement } from './wrap-react';
 import React from 'react';
+// Shared helpers
+const ICONS:Record<string, React.ComponentType<{ size?:number }>> = {
+  plus: PlusIcon,
+  pencil: PencilIcon,
+  undo: UndoIcon,
+  x: XIcon,
+  grabber: GrabberIcon,
+};
+
+const getIconVisual = (name:string | null, sizeAttr:string | null): React.ComponentType<{ size?:number }> | (() => React.ReactElement) | undefined => {
+  if (!name) return undefined;
+  const Icon = ICONS[name.toLowerCase()];
+  if (!Icon) return undefined;
+  if (sizeAttr) {
+    const parsed = parseInt(sizeAttr, 10);
+    if (!Number.isNaN(parsed)) return () => React.createElement(Icon, { size: parsed });
+  }
+  return Icon;
+};
+
+const getAriaProps = (host:HTMLElement): { ['aria-busy']?:string; ['aria-disabled']?:string } => {
+  const a11y: { ['aria-busy']?:string; ['aria-disabled']?:string } = {};
+  if (host.hasAttribute('loading')) a11y['aria-busy'] = 'true';
+  if (host.hasAttribute('inactive')) a11y['aria-disabled'] = 'true';
+  return a11y;
+};
 
 defineReactElement('primer-grabber-icon', GrabberIcon, {
   attributes: ['size'],
@@ -72,28 +98,9 @@ defineReactElement('primer-icon-button', IconButton, {
       // Reflect non-interactive state without disabling focus programmatically
       (props as any)['aria-disabled'] = 'true';
     }
-    const iconMap:Record<string, React.ComponentType<{ size?:number }>> = {
-      plus: PlusIcon,
-      pencil: PencilIcon,
-      undo: UndoIcon,
-      x: XIcon,
-    };
-    const resolveIcon = (
-      name: string | null,
-      sizeVal: string | null,
-    ): React.ComponentType<{ size?: number }> | (() => React.ReactElement) | undefined => {
-        const a11y = props as { ['aria-busy']?: string; ['aria-disabled']?: string };
-        if (host.hasAttribute('loading')) a11y['aria-busy'] = 'true';
-        if (host.hasAttribute('inactive')) a11y['aria-disabled'] = 'true';
-      if (!name) return undefined;
-      const Icon = iconMap[name.toLowerCase()];
-      if (!Icon) return undefined;
-      if (sizeVal) {
-        const parsed = parseInt(sizeVal, 10);
-        if (!Number.isNaN(parsed)) return () => React.createElement(Icon, { size: parsed });
-      }
-      return Icon;
-    };
+    const a11y = getAriaProps(host);
+    Object.assign(props as Record<string, unknown>, a11y);
+    const resolveIcon = getIconVisual;
     // IconButton expects `icon` prop; prefer explicit icon attribute
     const iconVisual = resolveIcon(iconName, iconSizeAttr);
     if (iconVisual) props.icon = iconVisual as React.ComponentProps<typeof IconButton>['icon'];
@@ -129,13 +136,8 @@ defineReactElement('primer-button', Button, {
     const props: Partial<React.ComponentProps<typeof Button>> = {};
     const leadingIcon = host.getAttribute('leading-icon');
     const leadingIconSize = host.getAttribute('leading-icon-size');
-    const iconMap:Record<string, React.ComponentType<{ size?:number }>> = {
-      plus: PlusIcon,
-      pencil: PencilIcon,
-      undo: UndoIcon,
-    };
     if (leadingIcon) {
-      const Icon = iconMap[leadingIcon.toLowerCase()];
+      const Icon = ICONS[leadingIcon.toLowerCase()];
       if (Icon) {
         const sizeVal = leadingIconSize ? parseInt(leadingIconSize, 10) : undefined;
         props.leadingVisual = sizeVal ? () => React.createElement(Icon, { size: sizeVal }) : Icon;
@@ -187,11 +189,9 @@ defineReactElement('primer-action-menu', ActionMenu, {
       const ariaLabel = el.getAttribute('aria-label');
       if (ariaLabel) (buttonProps as Record<string, unknown>)['aria-label'] = ariaLabel;
       const leadingIcon = el.getAttribute('leading-icon');
-      const iconMap:Record<string, React.ComponentType<{ size?:number }>> = {
-        plus: PlusIcon,
-      };
+      const iconMapLocal = ICONS;
       if (leadingIcon) {
-        const Icon = iconMap[leadingIcon.toLowerCase()];
+        const Icon = iconMapLocal[leadingIcon.toLowerCase()];
         if (Icon) {
           // In some environments, passing leadingVisual to a DOM <button> causes warnings.
           // Prefer to omit leadingVisual to avoid prop leakage in tests/stubs.
