@@ -30,3 +30,9 @@ getTestBed().initTestEnvironment(
     teardown: { destroyAfterEach: false },
   },
 );
+
+// Load all non-Vitest/Jest spec files. Exclude files ending with vitest.spec.ts or jest.spec.ts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const requireAny: any = require as any;
+const context = requireAny.context('./', true, /^(?!.*(vitest|jest)\.spec\.ts$).*\.spec\.ts$/);
+context.keys().forEach(context);

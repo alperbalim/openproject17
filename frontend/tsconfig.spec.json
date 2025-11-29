@@ -13,6 +13,11 @@
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts",
-    "src/custom-elements/**/*.ts"
+    "src/app/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.vitest.spec.ts",
+    "src/**/__tests__/**/*",
+    "src/test-stubs/**/*"
   ]
 }
