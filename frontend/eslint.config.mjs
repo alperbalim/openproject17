@@ -222,5 +222,6 @@ export default defineConfig([
     '**/.eslintrc.js',
     'coverage/',
     '**/vendor',
+    'src/test-stubs/**',
   ]),
 ]);

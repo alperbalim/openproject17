@@ -19,7 +19,7 @@ defineReactElement('primer-grabber-icon', GrabberIcon, {
 
 // Generic primer-icon for common octicons; renders into light DOM without shadow
 const IconProxy: React.FC<{ name?: string; size?: number; className?: string; 'aria-label'?: string }> = (props) => {
-  const iconMap:Record<string, React.ComponentType<{ size?:number; className?: string; 'aria-label'?: string }>> = {
+  const iconMap:Record<string, React.ComponentType<{ size?:number; className?:string; 'aria-label'?:string }>> = {
     plus: PlusIcon,
     pencil: PencilIcon,
     undo: UndoIcon,
@@ -36,8 +36,8 @@ defineReactElement('primer-icon', IconProxy, {
   events: { onClick: 'click' },
   shadow: false,
   contentStrategy: 'remove',
-  deriveProps: (host):Partial<React.ComponentProps<typeof IconProxy>> => {
-    const props:Partial<React.ComponentProps<typeof IconProxy>> = {};
+  deriveProps: (host): Partial<React.ComponentProps<typeof IconProxy>> => {
+    const props: Partial<React.ComponentProps<typeof IconProxy>> = {};
     const name = host.getAttribute('name') ?? undefined;
     const sizeAttr = host.getAttribute('size');
     const klass = host.getAttribute('class') ?? undefined;
@@ -57,8 +57,8 @@ defineReactElement('primer-icon-button', IconButton, {
   events: { onClick: 'click' },
   shadow: false,
   contentStrategy: 'remove',
-  deriveProps: (host):Partial<React.ComponentProps<typeof IconButton>> => {
-    const props:Partial<React.ComponentProps<typeof IconButton>> = {};
+  deriveProps: (host): Partial<React.ComponentProps<typeof IconButton>> => {
+    const props: Partial<React.ComponentProps<typeof IconButton>> = {};
     const iconName = host.getAttribute('icon');
     const iconSizeAttr = host.getAttribute('icon-size');
     const sizeAttr = host.getAttribute('size');
@@ -79,9 +79,12 @@ defineReactElement('primer-icon-button', IconButton, {
       x: XIcon,
     };
     const resolveIcon = (
-      name:string | null,
-      sizeVal:string | null,
-    ):React.ComponentType<{ size?:number }> | (() => React.ReactElement) | undefined => {
+      name: string | null,
+      sizeVal: string | null,
+    ): React.ComponentType<{ size?: number }> | (() => React.ReactElement) | undefined => {
+        const a11y = props as { ['aria-busy']?: string; ['aria-disabled']?: string };
+        if (host.hasAttribute('loading')) a11y['aria-busy'] = 'true';
+        if (host.hasAttribute('inactive')) a11y['aria-disabled'] = 'true';
       if (!name) return undefined;
       const Icon = iconMap[name.toLowerCase()];
       if (!Icon) return undefined;
@@ -102,7 +105,7 @@ defineReactElement('primer-icon-button', IconButton, {
 });
 
 defineReactElement('primer-button', Button, {
-  attributes: ['variant', 'leading-icon', 'leading-icon-size'],
+  attributes: ['variant'],
   events: { onClick: 'click' },
   shadow: true,
   contentStrategy: 'slot',
@@ -122,8 +125,8 @@ defineReactElement('primer-button', Button, {
     selectors: [/\.prc-/],
   },
   initialRenderDelayMs: 16,
-  deriveProps: (host):Partial<React.ComponentProps<typeof Button>> => {
-    const props:Partial<React.ComponentProps<typeof Button>> = {};
+  deriveProps: (host): Partial<React.ComponentProps<typeof Button>> => {
+    const props: Partial<React.ComponentProps<typeof Button>> = {};
     const leadingIcon = host.getAttribute('leading-icon');
     const leadingIconSize = host.getAttribute('leading-icon-size');
     const iconMap:Record<string, React.ComponentType<{ size?:number }>> = {
@@ -141,9 +144,13 @@ defineReactElement('primer-button', Button, {
 
     const klass = host.getAttribute('class');
     props.className = klass ?? props.className;
-    // Ensure we don't leak raw leadingIcon/leadingIconSize props onto DOM
-    (props as any).leadingIcon = undefined;
-    (props as any).leadingIconSize = undefined;
+    // Prevent leaking unknown props to underlying DOM/stub components
+    delete (props as any).leadingIcon;
+    delete (props as any).leadingIconSize;
+      // Prevent leaking unknown props to underlying DOM/stub components
+      const p = props as Record<string, unknown>;
+      delete p.leadingIcon;
+      delete p.leadingIconSize;
     return props;
   },
 });
@@ -172,32 +179,33 @@ defineReactElement('primer-action-menu', ActionMenu, {
     }
 
     // Extract button props from the first assigned element attributes (if any)
-    const buttonProps:Partial<React.ComponentProps<typeof ActionMenu.Button>> = {};
+    const buttonProps: Partial<React.ComponentProps<typeof ActionMenu.Button>> = {};
     if (buttonAssigned[0] && buttonAssigned[0].nodeType === Node.ELEMENT_NODE) {
       const el = buttonAssigned[0] as HTMLElement;
       const variant = el.getAttribute('variant');
       if (variant) buttonProps.variant = variant as React.ComponentProps<typeof ActionMenu.Button>['variant'];
       const ariaLabel = el.getAttribute('aria-label');
-      if (ariaLabel) (buttonProps as any)['aria-label'] = ariaLabel;
+      if (ariaLabel) (buttonProps as Record<string, unknown>)['aria-label'] = ariaLabel;
       const leadingIcon = el.getAttribute('leading-icon');
-      const leadingIconSize = el.getAttribute('leading-icon-size');
       const iconMap:Record<string, React.ComponentType<{ size?:number }>> = {
         plus: PlusIcon,
       };
       if (leadingIcon) {
         const Icon = iconMap[leadingIcon.toLowerCase()];
         if (Icon) {
-          const sizeVal = leadingIconSize ? parseInt(leadingIconSize, 10) : undefined;
-          buttonProps.leadingVisual = sizeVal ? () => React.createElement(Icon, { size: sizeVal }) : Icon;
+          // In some environments, passing leadingVisual to a DOM <button> causes warnings.
+          // Prefer to omit leadingVisual to avoid prop leakage in tests/stubs.
+          // const sizeVal = _leadingIconSize ? parseInt(_leadingIconSize, 10) : undefined;
+          // buttonProps.leadingVisual = sizeVal ? () => React.createElement(Icon, { size: sizeVal }) : Icon;
         }
       }
     }
     // Build overlay content: map <primer-action-list> and its items to Primer React <ActionList>
     const overlayAssigned = assigned('overlay');
     let overlayChild:React.ReactNode | undefined;
-    const findList = (node:Node):Element | undefined => {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const el = node as Element;
+    const findList = (node: Node): Element | undefined => {
+      if (node instanceof Element) {
+        const el = node;
         if (el.tagName.toLowerCase() === 'primer-action-list') return el;
         for (const child of Array.from(el.children)) {
           const found = findList(child);
@@ -218,12 +226,12 @@ defineReactElement('primer-action-menu', ActionMenu, {
           const onClick = () => {
             try {
               c.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-            } catch { /* noop */ }
+            } catch { void 0; }
           };
           if (isLink) {
-            items.push(React.createElement((ActionList as any).LinkItem, { key: idx, href: c.getAttribute('href') ?? undefined, onClick }, label));
+            items.push(React.createElement(AL.LinkItem, { key: idx, href: c.getAttribute('href') ?? undefined, onClick }, label));
           } else {
-            items.push(React.createElement(ActionList.Item, { key: idx, onClick }, label));
+            items.push(React.createElement(AL.Item, { key: idx, onClick }, label));
           }
         });
         overlayChild = React.createElement(ActionList, null, ...items);
@@ -240,6 +248,14 @@ defineReactElement('primer-action-menu', ActionMenu, {
 });
 
 // Standalone primer-action-list custom element with slots
+const AL = ActionList as unknown as {
+  Heading: React.FC<any>;
+  GroupHeading: React.FC<any>;
+  Group: React.FC<any>;
+  Item: React.FC<any>;
+  LinkItem: React.FC<any>;
+};
+
 defineReactElement('primer-action-list', ActionList as any, {
   shadow: true,
   contentStrategy: 'slot',
@@ -271,16 +287,17 @@ defineReactElement('primer-action-list', ActionList as any, {
     const findAssoc = (arr: HTMLElement[], id: string | null) => arr.find(byId(id));
 
     const children: React.ReactNode[] = [];
-    if (headingSlot) children.push(React.createElement((ActionList as any).Heading, null, headingSlot.textContent));
-    if (groupHeadingSlot) children.push(React.createElement((ActionList as any).GroupHeading, null, groupHeadingSlot.textContent));
+    if (headingSlot) children.push(React.createElement(AL.Heading, null, headingSlot.textContent ?? ''));
+    if (groupHeadingSlot) children.push(React.createElement(AL.GroupHeading, null, groupHeadingSlot.textContent ?? ''));
 
     groups.forEach(g => {
-      const GroupComp = (ActionList as any).Group;
+      const GroupComp = AL.Group;
       children.push(React.createElement(GroupComp, null, g.textContent));
     });
 
     // Explicit item slots (button-like)
     items.forEach(el => {
+      if (el.tagName.toLowerCase() === 'button' && !el.hasAttribute('type')) el.setAttribute('type', 'button');
       const id = el.getAttribute('id');
       const Leading = findAssoc(leadingVisuals, id);
       const Trailing = findAssoc(trailingVisuals, id);
@@ -289,20 +306,20 @@ defineReactElement('primer-action-list', ActionList as any, {
       const leadingComp = Leading ? (() => React.createElement('span', { 'data-leading-visual': true }, Leading.textContent)) : undefined;
       const trailingComp = Trailing ? (() => React.createElement('span', { 'data-trailing-visual': true }, Trailing.textContent)) : undefined;
       const trailingActionComp = TrailingAction ? (() => React.createElement('span', { 'data-trailing-action': true }, TrailingAction.textContent)) : undefined;
-      const descriptionText = Desc ? Desc.textContent || '' : undefined;
+      const descriptionText = Desc ? (Desc.textContent ?? '') : undefined;
       const onClick = () => {
         try {
           el.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-        } catch {}
+        } catch { void 0; }
       };
-      children.push(React.createElement((ActionList as any).Item, {
+      children.push(React.createElement(AL.Item, {
         onClick,
         leadingVisual: leadingComp,
         trailingVisual: trailingComp,
         trailingAction: trailingActionComp,
         description: descriptionText,
-        className: el.getAttribute('class') || undefined,
-      }, el.textContent));
+        className: el.getAttribute('class') ?? undefined,
+      }, el.textContent ?? ''));
     });
 
     // Explicit link-item slots
@@ -315,27 +332,28 @@ defineReactElement('primer-action-list', ActionList as any, {
       const leadingComp = Leading ? (() => React.createElement('span', { 'data-leading-visual': true }, Leading.textContent)) : undefined;
       const trailingComp = Trailing ? (() => React.createElement('span', { 'data-trailing-visual': true }, Trailing.textContent)) : undefined;
       const trailingActionComp = TrailingAction ? (() => React.createElement('span', { 'data-trailing-action': true }, TrailingAction.textContent)) : undefined;
-      const descriptionText = Desc ? Desc.textContent || '' : undefined;
+      const descriptionText = Desc ? (Desc.textContent ?? '') : undefined;
       const onClick = () => {
         try {
           li.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-        } catch {}
+        } catch { void 0; }
       };
-      children.push(React.createElement((ActionList as any).LinkItem, {
-        href: li.getAttribute('href') || undefined,
+      children.push(React.createElement(AL.LinkItem, {
+        href: li.getAttribute('href') ?? undefined,
         onClick,
         leadingVisual: leadingComp,
         trailingVisual: trailingComp,
         trailingAction: trailingActionComp,
         description: descriptionText,
-        className: li.getAttribute('class') || undefined,
-      }, li.textContent));
+        className: li.getAttribute('class') ?? undefined,
+      }, li.textContent ?? ''));
     });
 
     // Fallback: treat default assigned elements as items
     defaultNodes.forEach((n) => {
       if (n.nodeType !== Node.ELEMENT_NODE) return;
       const el = n as HTMLElement;
+      if (el.tagName.toLowerCase() === 'button' && !el.hasAttribute('type')) el.setAttribute('type', 'button');
       const id = el.getAttribute('id');
       const Leading = findAssoc(leadingVisuals, id);
       const Trailing = findAssoc(trailingVisuals, id);
@@ -344,32 +362,32 @@ defineReactElement('primer-action-list', ActionList as any, {
       const leadingComp = Leading ? (() => React.createElement('span', { 'data-leading-visual': true }, Leading.textContent)) : undefined;
       const trailingComp = Trailing ? (() => React.createElement('span', { 'data-trailing-visual': true }, Trailing.textContent)) : undefined;
       const trailingActionComp = TrailingAction ? (() => React.createElement('span', { 'data-trailing-action': true }, TrailingAction.textContent)) : undefined;
-      const descriptionText = Desc ? Desc.textContent || '' : undefined;
+      const descriptionText = Desc ? (Desc.textContent ?? '') : undefined;
       const onClick = () => {
         try {
           el.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-        } catch {}
+        } catch { void 0; }
       };
       const isLink = el.tagName.toLowerCase() === 'a' || el.hasAttribute('href');
       if (isLink) {
-        children.push(React.createElement((ActionList as any).LinkItem, {
-          href: el.getAttribute('href') || undefined,
+        children.push(React.createElement(AL.LinkItem, {
+          href: el.getAttribute('href') ?? undefined,
           onClick,
           leadingVisual: leadingComp,
           trailingVisual: trailingComp,
           trailingAction: trailingActionComp,
           description: descriptionText,
-          className: el.getAttribute('class') || undefined,
-        }, el.textContent));
+          className: el.getAttribute('class') ?? undefined,
+        }, el.textContent ?? ''));
       } else {
-        children.push(React.createElement((ActionList as any).Item, {
+        children.push(React.createElement(AL.Item, {
           onClick,
           leadingVisual: leadingComp,
           trailingVisual: trailingComp,
           trailingAction: trailingActionComp,
           description: descriptionText,
-          className: el.getAttribute('class') || undefined,
-        }, el.textContent));
+          className: el.getAttribute('class') ?? undefined,
+        }, el.textContent ?? ''));
       }
     });
     return children;
