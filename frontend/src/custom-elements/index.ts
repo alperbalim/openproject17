@@ -2,6 +2,7 @@ import { ActionMenu, Button, ActionList, IconButton } from '@primer/react';
 import { PencilIcon, PlusIcon, GrabberIcon, UndoIcon, XIcon } from '@primer/octicons-react';
 
 import { defineReactElement } from './wrap-react';
+import { buildActionListChildren } from './utils';
 import React from 'react';
 // Shared helpers
 const ICONS:Record<string, React.ComponentType<{ size?:number }>> = {
@@ -217,23 +218,7 @@ defineReactElement('primer-action-menu', ActionMenu, {
     for (const n of overlayAssigned) {
       const listEl = findList(n);
       if (listEl) {
-        const items:React.ReactNode[] = [];
-        // Support both slotted and default children inside primer-action-list
-        const childEls = Array.from(listEl.querySelectorAll('[slot="item"],[slot="link-item"],a,button,div')) as HTMLElement[];
-        childEls.forEach((c, idx) => {
-          const isLink = c.getAttribute('slot') === 'link-item' || c.tagName.toLowerCase() === 'a' || c.hasAttribute('href');
-          const label = c.textContent ?? '';
-          const onClick = () => {
-            try {
-              c.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
-            } catch { void 0; }
-          };
-          if (isLink) {
-            items.push(React.createElement(AL.LinkItem, { key: idx, href: c.getAttribute('href') ?? undefined, onClick }, label));
-          } else {
-            items.push(React.createElement(AL.Item, { key: idx, onClick }, label));
-          }
-        });
+        const items = buildActionListChildren(listEl as HTMLElement, AL as any);
         overlayChild = React.createElement(ActionList, null, ...items);
         break;
       }
