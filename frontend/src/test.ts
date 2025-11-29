@@ -10,6 +10,7 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
+// Primer CSS is provided via angular.json test styles.
 import { I18n } from 'i18n-js';
 import { registerDialogStreamAction } from 'core-turbo/dialog-stream-action';
 

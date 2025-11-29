@@ -19,6 +19,21 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma'),
       require('karma-spec-reporter'),
     ],
+    // Webpack override to handle CSS imports from node_modules (e.g., @primer/react)
+    webpack: {
+      module: {
+        rules: [
+          {
+            test: /\.css$/,
+            include: /node_modules/,
+            use: [
+              { loader: 'style-loader' },
+              { loader: 'css-loader' },
+            ],
+          },
+        ],
+      },
+    },
     client:{
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },

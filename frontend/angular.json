@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "builder": "@angular-builders/custom-webpack:karma",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -8,6 +8,10 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "sass"
+      "customWebpackConfig": {
+        "path": "webpack.test.config.js",
+        "replaceDuplicatePlugins": true
+      },
         }
       },
       "root": "",
@@ -20,13 +24,9 @@
             "allowedCommonJsDependencies": [
               "dom-plane",
               "pako",
-              "moment-timezone",
-              "observable-array",
-              "dragula",
-              "jquery",
-              "contra/emitter",
-              "crossvent",
-              "create-point-cb",
+              "core-vendor/enjoyhint",
+              "tablesorter"
+            ],
               "core-vendor/enjoyhint",
               "tablesorter"
             ],
@@ -149,7 +149,9 @@
             "karmaConfig": "./karma.conf.js",
             "tsConfig": "tsconfig.spec.json",
             "scripts": [],
-            "styles": [],
+            "styles": [
+              "@primer/css/dist/primer.css"
+            ],
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/assets/sass/"

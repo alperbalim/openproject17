@@ -44,7 +44,7 @@ function parseChild(
       if (!name.startsWith('data-')) name = toCamelCase(name);
 
       if (name === 'style') {
-        const input = value
+        const input = String(value)
           .split(';')
           .filter((value) => value.length > 0)
           .map((value) =>
@@ -54,16 +54,16 @@ function parseChild(
               .map((value) => value.trim()),
           );
 
-        const styles:Record<string, unknown> = {};
+        const styles:Record<string, string> = {};
         for (const [key, value] of input) {
           const camelKey = toCamelCase(key);
 
-          // @ts-expect-error style value typing depends on React CSSProperties
-          styles[camelKey] = value;
+          styles[camelKey] = String(value);
         }
 
-        // @ts-expect-error assigning style object to props value for React createElement
-        value = styles;
+        // Assign computed styles directly to props.style and skip default assignment below.
+        props.style = styles as unknown as React.CSSProperties;
+        continue;
       }
 
       props[name] = value;
