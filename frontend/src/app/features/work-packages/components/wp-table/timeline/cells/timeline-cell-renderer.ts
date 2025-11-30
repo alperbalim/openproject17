@@ -322,7 +322,8 @@ export class TimelineCellRenderer {
         break;
       }
       // Extend the duration if the currentDate is non-working
-      if (this.weekdayService.isNonWorkingDay(currentDate.toDate() || this.workPackageTimeline.isNonWorkingDay(currentDate.toDate()))) {
+      const current = currentDate.toDate();
+      if (this.weekdayService.isNonWorkingDay(current) || this.workPackageTimeline.isNonWorkingDay(current)) {
         duration += 1;
       }
     }
@@ -474,7 +475,7 @@ export class TimelineCellRenderer {
       ? [this.cursorDateAndDayOffset(evOrDates, renderInfo)[0]]
       : evOrDates;
     if (!renderInfo.workPackage.ignoreNonWorkingDays && direction === 'both'
-      && (this.weekdayService.isNonWorkingDay(dates[dates.length - 1].toDate() || this.workPackageTimeline.isNonWorkingDay(dates[dates.length - 1].toDate())))) {
+      && (this.weekdayService.isNonWorkingDay(dates[dates.length - 1].toDate()) || this.workPackageTimeline.isNonWorkingDay(dates[dates.length - 1].toDate()))) {
       return false;
     }
     return dates.some((date) => (this.weekdayService.isNonWorkingDay(date.toDate()) || this.workPackageTimeline.isNonWorkingDay(date.toDate())));

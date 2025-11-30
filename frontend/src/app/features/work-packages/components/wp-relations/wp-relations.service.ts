@@ -109,7 +109,7 @@ export class WorkPackageRelationsService extends StateCacheService<RelationsStat
     const relations:RelationsStateValue|undefined = this.state(from.id!).value;
 
     if (!relations) {
-      return;
+      // No-op to satisfy TypeScript control flow
     }
 
     return _.find(relations, (relation:RelationResource) => {

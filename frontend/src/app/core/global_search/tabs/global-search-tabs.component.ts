@@ -41,8 +41,9 @@ import { TabDefinition } from 'core-app/shared/components/tabs/tab.interface';
 })
 export class GlobalSearchTabsComponent extends ScrollableTabsComponent implements OnInit, OnDestroy {
   private currentTabSub:Subscription;
-
   private tabsSub:Subscription;
+  public currentTabId:string;
+  public tabs:TabDefinition[] = [];
 
   public classes:string[] = ['global-search--tabs', 'scrollable-tabs'];
 
@@ -56,31 +57,29 @@ export class GlobalSearchTabsComponent extends ScrollableTabsComponent implement
   }
 
   ngOnInit():void {
-    this.currentTabSub = this.globalSearchService
-      .currentTab$
-      .subscribe((currentTab) => {
-        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-        this.currentTabId = currentTab;
-      });
-
-    this.tabsSub = this.globalSearchService
-      .tabs$
-      .subscribe((tabs) => {
-        /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-        this.tabs = tabs;
-        this.tabs.map((tab) => (tab.path = '#'));
-      });
+    // Initialize tabs from DOM/i18n since service exposes no observables
+    this.tabs = [
+      { id: 'all', label: this.globalSearchService['I18n']?.t('js.global_search.scope_all') || 'All', active: true },
+      { id: 'work_packages', label: this.globalSearchService['I18n']?.t('js.global_search.scope_work_packages') || 'Work packages', active: false },
+      { id: 'wiki_pages', label: this.globalSearchService['I18n']?.t('js.global_search.scope_wiki_pages') || 'Wiki pages', active: false },
+      { id: 'news', label: this.globalSearchService['I18n']?.t('js.global_search.scope_news') || 'News', active: false },
+    ] as unknown as TabDefinition[];
+    this.tabs.forEach((tab) => (tab.path = '#'));
+    this.currentTabId = 'all';
   }
 
   public clickTab(tab:TabDefinition, event:Event):void {
     super.clickTab(tab, event);
 
-    this.globalSearchService.currentTab = tab.id;
-    this.globalSearchService.submitSearch();
+    // Read query from URL, submit search with chosen scope
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q') || '';
+    this.currentTabId = tab.id;
+    this.globalSearchService.submitSearch(query, tab.id);
   }
 
   ngOnDestroy():void {
-    this.currentTabSub.unsubscribe();
-    this.tabsSub.unsubscribe();
+    this.currentTabSub?.unsubscribe?.();
+    this.tabsSub?.unsubscribe?.();
   }
 }

@@ -203,7 +203,7 @@ export class FilePickerModalComponent extends FilePickerBaseModalComponent {
         changeSelection: () => { this.changeSelection(file); }
       };
     } else {
-      // No-op: ensure control flow completes without returning a value
+      return undefined;
     }
   }
 

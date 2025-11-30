@@ -31,9 +31,7 @@ import { FetchResponse } from '@rails/request.js';
 /**************************************
   STORY
 ***************************************/
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Story = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create(RB.WorkPackage, RB.EditableInplace, {
     initialize(el:any) {
       this.$ = $(el);
@@ -122,11 +120,9 @@ RB.Story = (function ($) {
       //      valid url - one option might be to take RB.constants.sprint_id
       //      hoping it exists
       if (this.isNew()) {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         url = RB.urlFor('create_story', { sprint_id: sprintId });
         method = 'post';
       } else {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         url = RB.urlFor('update_story', { id: this.getID(), sprint_id: sprintId });
         method = 'put';
       }

@@ -91,7 +91,7 @@ export abstract class BoardActionService {
   getActionValueId(query:QueryResource, getHref = false):string|undefined {
     const filter = this.getActionFilter(query);
     if (!filter) {
-      return;
+      // No-op to satisfy TypeScript control flow
     }
 
     const value = filter.values[0];

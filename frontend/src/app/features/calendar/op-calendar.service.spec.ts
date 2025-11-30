@@ -35,7 +35,7 @@ describe('OP calendar service', () => {
   beforeEach(waitForAsync(() => {
     // This is not a valid constructor call, but since we only want to test a helper method that does not
     // depend on injected services, we can pass null values here.
-    // @ts-expect-error ignore invalid constructor call since we don't need a completely valid instance
+    // ignore invalid constructor call since we don't need a completely valid instance
     service = new OpCalendarService(null, null, null);
   }));
 

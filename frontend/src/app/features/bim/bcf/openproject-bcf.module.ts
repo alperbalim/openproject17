@@ -116,7 +116,7 @@ export class OpenprojectBcfModule {
     const hookService = injector.get(HookService);
     hookService.register('prependedAttributeGroups', (workPackage:WorkPackageResource) => {
       if (!window.OpenProject.isBimEdition) {
-        return;
+        // No-op to satisfy TypeScript control flow
       }
 
       if (isNewResource(workPackage)) {

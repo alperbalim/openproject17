@@ -27,6 +27,7 @@ export const insertInList = (
         disabled: false,
         children: [],
         position: 0,
+        identifier: (project as any).identifier || project.name || String(project.id),
       },
     ];
   }
@@ -59,6 +60,7 @@ export const insertInList = (
       disabled: true,
       children: insertInList(projects, project, [], visibleAncestors.slice(1)),
       position: 0,
+      identifier: (ancestorProject as any).identifier || ancestorProject.name || String(ancestorProject.id),
     },
   ];
 };

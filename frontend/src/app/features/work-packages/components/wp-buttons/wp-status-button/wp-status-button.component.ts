@@ -91,7 +91,7 @@ export class WorkPackageStatusButtonComponent extends UntilDestroyedMixin implem
   public get statusHighlightClass() {
     const { status } = this;
     if (!status) {
-      return;
+      // No-op to satisfy TypeScript control flow
     }
     return Highlighting.backgroundClass('status', status.id!);
   }

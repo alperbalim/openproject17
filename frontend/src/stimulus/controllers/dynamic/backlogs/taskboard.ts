@@ -30,9 +30,7 @@
   TASKBOARD
 ***************************************/
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Taskboard = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create(RB.Model, {
 
     initialize(el:any) {
@@ -107,14 +105,12 @@ RB.Taskboard = (function ($) {
 
     initializeTasks() {
       this.$.find('.task').each(function (this:any, index:any) {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         RB.Factory.initialize(RB.Task, this);
       });
     },
 
     initializeImpediments() {
       this.$.find('.impediment').each(function (this:any, index:any) {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         RB.Factory.initialize(RB.Impediment, this);
       });
     },
