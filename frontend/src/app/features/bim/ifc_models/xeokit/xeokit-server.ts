@@ -1,4 +1,4 @@
-// @ts-expect-error xeokit-sdk has no module
+// xeokit-sdk has no module (non-TS import)
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { utils } from '@xeokit/xeokit-sdk/dist/xeokit-sdk.es';
 import { PathHelperService } from 'core-app/core/path-helper/path-helper.service';

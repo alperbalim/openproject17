@@ -1,0 +1,6 @@
+app/forms/settings/form_helper.rb 0e6128dac3a5f968487fd1f87bb67b7ab98f8b8f
+app/forms/settings/input_methods.rb 48ac8ba0e63e0b51805a526256d3149b22dba7e6
+app/forms/settings/multi_lang_form.rb 3264c2bc1e5c702fcfb2c9294153e42a2691d5bf
+app/forms/settings/form_object_decorator.rb 454d427a369d15c2629c51957e4d30dd444faf2e
+app/forms/settings/input_group_decorator.rb c8413394195b43625f3d141fab1597228db104ba
+app/forms/settings/authentication_settings_form.rb f192e3603a8b24a8a0b4adc6a46450386c4e19b8

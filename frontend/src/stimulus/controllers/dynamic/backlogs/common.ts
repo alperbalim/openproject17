@@ -28,9 +28,9 @@
 
 import 'jquery.cookie';
 
-// @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
+  // Property 'RB' may not exist on window in tests
 if (window.RB === null || window.RB === undefined) {
-  // @ts-expect-error TS(2339): Property 'RB' does not exist on type 'Window & typ... Remove this comment to see the full error message
+    // Define RB as empty object for test scope
   window.RB = {};
 }
 
@@ -53,7 +53,7 @@ if (window.RB === null || window.RB === undefined) {
       }
 
       F.prototype = arguments[0];
-      // @ts-expect-error TS(7009): 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
+      // Use prototypal inheritance shim
       obj = new F();
 
       // Add all the other arguments as mixins that
@@ -129,12 +129,9 @@ if (window.RB === null || window.RB === undefined) {
     },
   });
 
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
+  // Assign RB helpers
   RB.Object = object;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Factory = Factory;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.Dialog = Dialog;
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   RB.UserPreferences = UserPreferences;
 }(jQuery));

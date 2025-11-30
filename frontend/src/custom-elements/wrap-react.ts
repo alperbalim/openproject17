@@ -150,7 +150,7 @@ export function defineReactElement<Props extends object = object>(
             children = Array.isArray(built) ? built : [built];
           } else {
             children = this._getSlottedReactChildren();
-          }
+      }
           // Hide all slots to avoid duplicate rendering
           if (this._slotEl) {
             this._slotEl.hidden = true;

@@ -1,0 +1,10 @@
+sass-migrator module src/styles.scss src/spot.scss src/backlogs.scss \
+  --migrate-deps \
+  --load-path=src/assets/sass/ --load-path=node_modules/
+  
+  
+  --load-path=src/
+
+
+sass-migrator module src/styles.scss src/spot.scss src/backlogs.scss \
+  --load-path=src/assets/sass/ --load-path=node_modules/

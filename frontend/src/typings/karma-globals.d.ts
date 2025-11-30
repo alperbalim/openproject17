@@ -11,8 +11,12 @@ declare global {
     appBasePath?: string;
     ErrorReporter?: any;
     I18n?: any;
+    RB?: any;
   }
 }
+
+// Legacy RB namespace used in backlogs code
+declare var RB: any;
 
 // Stub dom-plane exports used in code
 declare module 'dom-plane' {

@@ -34,9 +34,7 @@ import { FetchRequest, FetchResponse } from '@rails/request.js';
   story, task, and impediment
 ***************************************/
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Model = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create({
 
     initialize(el:any) {
@@ -150,7 +148,7 @@ RB.Model = (function ($) {
       $('.stories .editors .editor').each(function (index) {
         let value;
 
-        // @ts-expect-error TS(2345): Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
+        // parse tabindex safely
         value = parseInt($(this).attr('tabindex'), 10);
 
         if (maxTabIndex < value) {
@@ -164,7 +162,7 @@ RB.Model = (function ($) {
           const fieldId = field.attr('field_id');
           const fieldName = field.attr('fieldname');
           const fieldLabel = field.attr('fieldlabel');
-          // @ts-expect-error TS(2345): Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
+          // parse field order safely
           const fieldOrder = parseInt(field.attr('fieldorder'), 10);
           const fieldEditable = field.attr('fieldeditable') || 'true';
           const fieldType = field.attr('fieldtype') || 'input';
@@ -186,12 +184,10 @@ RB.Model = (function ($) {
               input = $(`#${fieldName}_options`).clone(true);
               // if the type changes the status dropdown has to be modified
               input.change(function () {
-                // @ts-expect-error TS(2683): 'this' implicitly has type 'any' because it does n... Remove this comment to see the full error message
                 typeId = $(this).val();
                 statusId = $.trim(self.$.find('.status_id .v').html());
                 let newInput = self.findFactory(typeId, statusId, 'status_id');
                 newInput = self.prepareInputFromFactory(newInput, fieldId, 'status_id', fieldOrder, maxTabIndex);
-                // @ts-expect-error TS(2683): 'this' implicitly has type 'any' because it does n... Remove this comment to see the full error message
                 newInput = self.replaceStatusForNewType(input, newInput, $(this).parent().find('.status_id').val(), editor);
               });
             } else {
@@ -219,7 +215,6 @@ RB.Model = (function ($) {
 
           $('<label />').attr({
             for: input.attr('id'),
-          // @ts-expect-error TS(2345): Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
           }).text(fieldLabel).appendTo(editor);
           input.appendTo(editor);
         });

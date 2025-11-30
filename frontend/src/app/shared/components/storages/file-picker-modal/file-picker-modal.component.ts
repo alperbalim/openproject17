@@ -202,7 +202,9 @@ export class FilePickerModalComponent extends FilePickerBaseModalComponent {
         selected: this.selection.has(file.id as string),
         changeSelection: () => { this.changeSelection(file); }
       };
-    } else { return; }
+    } else {
+      // No-op: ensure control flow completes without returning a value
+    }
   }
 
   private isAlreadyLinked(file:IStorageFile):boolean {
