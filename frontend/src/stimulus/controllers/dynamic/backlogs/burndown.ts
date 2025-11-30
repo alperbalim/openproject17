@@ -26,9 +26,7 @@
 // See COPYRIGHT and LICENSE files for more details.
 //++
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Burndown = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create({
 
     initialize(el:any) {
@@ -56,10 +54,8 @@ RB.Burndown = (function ($) {
       if ($('#charts').length === 0) {
         $('<div id="charts"></div>').appendTo('body');
       }
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       $('#charts').html(`<div class='loading'>${RB.i18n.generating_graph}</div>`);
 
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       const url = RB.urlFor('show_burndown_chart', { sprint_id: $(this).data('this').sprintId, project_id: RB.constants.project_id });
       window.open(url);
     },

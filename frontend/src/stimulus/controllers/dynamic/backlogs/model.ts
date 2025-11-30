@@ -52,7 +52,6 @@ RB.Model = (function ($) {
       let result;
 
       isNew = this.isNew();
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       result = RB.Factory.initialize(RB.Model, data);
 
       this.unmarkSaving();
@@ -287,7 +286,6 @@ RB.Model = (function ($) {
 
     error(responseHtml:string, error:unknown) {
       this.markError();
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       RB.Dialog.msg($(responseHtml).find('.errors').html());
       this.processError(responseHtml, error);
     },

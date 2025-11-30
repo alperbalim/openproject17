@@ -38,9 +38,7 @@
   visualize the sprint.
 ******************************************/
 
-// @ts-expect-error TS(2304): Cannot find name 'RB'.
 RB.Backlog = (function ($) {
-  // @ts-expect-error TS(2304): Cannot find name 'RB'.
   return RB.Object.create({
 
     initialize(el:any) {
@@ -73,9 +71,7 @@ RB.Backlog = (function ($) {
       this.$.find('.add_new_story').click(this.handleNewStoryClick);
 
       if (this.isSprintBacklog()) {
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         RB.Factory.initialize(RB.Sprint, this.getSprint());
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         this.burndown = RB.Factory.initialize(RB.Burndown, this.$.find('.show_burndown_chart'));
         this.burndown.setSprintId(this.getSprint().data('this').getID());
       }
@@ -83,7 +79,6 @@ RB.Backlog = (function ($) {
       // Initialize each item in the backlog
       this.getStories().each(function (this:any, index:any) {
         // 'this' refers to an element with class="story"
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         RB.Factory.initialize(RB.Story, this);
       });
 
@@ -148,7 +143,6 @@ RB.Backlog = (function ($) {
       story = $('#story_template').children().first().clone();
       this.getList().prepend(story);
 
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       o = RB.Factory.initialize(RB.Story, story[0]);
       o.edit();
 

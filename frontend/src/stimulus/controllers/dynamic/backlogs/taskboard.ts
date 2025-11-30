@@ -156,11 +156,9 @@ RB.Taskboard = (function ($) {
     },
 
     loadColWidthPreference() {
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       let w = RB.UserPreferences.get('taskboardColWidth');
       if (w === null || w === undefined) {
         w = this.defaultColWidth;
-        // @ts-expect-error TS(2304): Cannot find name 'RB'.
         RB.UserPreferences.set('taskboardColWidth', w);
       }
       $('#col_width input').val(w);
@@ -173,7 +171,6 @@ RB.Taskboard = (function ($) {
       impediment = $('#impediment_template').children().first().clone();
       row.find('.list').first().prepend(impediment);
 
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       o = RB.Factory.initialize(RB.Impediment, impediment);
       o.edit();
     },
@@ -185,7 +182,6 @@ RB.Taskboard = (function ($) {
       task = $('#task_template').children().first().clone();
       row.find('.list').first().prepend(task);
 
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       o = RB.Factory.initialize(RB.Task, task);
       o.edit();
     },
@@ -198,7 +194,6 @@ RB.Taskboard = (function ($) {
         w = this.defaultColWidth;
       }
       $('#col_width_input').val(w);
-      // @ts-expect-error TS(2304): Cannot find name 'RB'.
       RB.UserPreferences.set('taskboardColWidth', w);
       $('.swimlane').width(this.colWidthUnit * w).css('min-width', this.colWidthUnit * w);
     },
