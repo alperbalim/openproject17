@@ -73,6 +73,7 @@ function useCollaborationProvider(
 
     if (provider.synced) {
       onSynced();
+      return undefined;
     }
 
     provider.on('synced', onSynced);
