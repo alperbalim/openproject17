@@ -36,9 +36,13 @@ getTestBed().initTestEnvironment(
 const requireAny: any = require as any;
 // Only include specs under src/, exclude custom-elements subtree and Vitest/Jest patterns
 // Limit Jasmine specs to Angular app and Stimulus; exclude vitest/jest and custom-elements
-const context = requireAny.context(
-  './src/',
-  true,
-  /^(app|stimulus)\/.*(?<!\.(vitest|jest)\.spec\.ts)\.spec\.ts$/,
-);
-context.keys().forEach(context);
+if (typeof requireAny.context === 'function') {
+  const context = requireAny.context(
+    './src/',
+    true,
+    /^(app|stimulus)\/.*(?<!\.(vitest|jest)\.spec\.ts)\.spec\.ts$/,
+  );
+  context.keys().forEach(context);
+} else {
+  // esbuild-based builder does not provide require.context; specs will be discovered via Angular builder
+}
