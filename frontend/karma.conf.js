@@ -6,7 +6,8 @@ module.exports = function (config) {
     basePath: '',
     // Prevent Angular builder from picking up React custom-elements tests
     exclude: [
-      'src/custom-elements/**'
+      'src/custom-elements/**',
+      'src/react/**'
     ],
     files: [
       // I18n.js is provided by the Asset pipeline,

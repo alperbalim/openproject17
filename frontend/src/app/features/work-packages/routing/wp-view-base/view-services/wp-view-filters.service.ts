@@ -242,7 +242,7 @@ export class WorkPackageViewFiltersService extends WorkPackageQueryStateService<
     const index = this.findIndex(id);
 
     if (index === -1) {
-      return;
+      return undefined;
     }
 
     return this.rawFilters[index];
