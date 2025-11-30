@@ -478,7 +478,10 @@ export default class FiltersFormController extends Controller {
       selectFields = this.filterValueSelectTargets.filter((selectField) => !selectField.multiple && selectField.getAttribute('data-filter-name') === filterName);
     }
 
-    const selectedValues = _.flatten(Array.from(selectFields).map((selectField) => Array.from(selectField.selectedOptions).map((option) => option.value)));
+    const selectedValues = _.flatten(Array.from(selectFields).map((selectField) => {
+      const el = selectField as unknown as HTMLSelectElement;
+      return Array.from(el.selectedOptions).map((option) => option.value);
+    }));
 
     if (selectedValues.length > 0) {
       return selectedValues;

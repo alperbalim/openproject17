@@ -85,7 +85,7 @@ export default class MatchPreviewDialogController extends Controller {
   private updateMatchPreview() {
     if(this.updateMatchTimeout) clearTimeout(this.updateMatchTimeout);
 
-    this.updateMatchTimeout = setTimeout(() => { this.doUpdateMatchPreview(); }, 500);
+    this.updateMatchTimeout = (window.setTimeout(() => { this.doUpdateMatchPreview(); }, 500) as unknown as number);
   }
 
   private doUpdateMatchPreview() {
@@ -106,7 +106,7 @@ export default class MatchPreviewDialogController extends Controller {
 
   private get pluginContext():Observable<OpenProjectPluginContext> {
     if (this.pluginContextData === null) {
-      return from(window.OpenProject.getPluginContext()).pipe(
+      return from(window.OpenProject.getPluginContext() as Promise<OpenProjectPluginContext>).pipe(
         tap((context) => {
           this.pluginContextData = context;
         }),

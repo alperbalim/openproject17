@@ -39,7 +39,7 @@ function useConnectionTimeout(provider:HocuspocusProvider | undefined, timeoutMs
 
   useEffect(() => {
     setHasTimedOut(false);
-    if (!provider) return;
+    if (!provider) return undefined;
 
     if (provider.synced) {
       setHasTimedOut(false);
@@ -69,7 +69,7 @@ function useCollaborationProvider(
   onDisconnect:() => void,
 ) {
   useEffect(() => {
-    if (!provider) return;
+    if (!provider) return undefined;
 
     if (provider.synced) {
       onSynced();
@@ -88,7 +88,7 @@ function useCollaborationProvider(
 
 function useLocalDocumentSync(doc:Y.Doc, inputField:HTMLInputElement, enabled:boolean) {
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) return undefined;
 
     const updateInput = () => {
       const update = Y.encodeStateAsUpdate(doc);

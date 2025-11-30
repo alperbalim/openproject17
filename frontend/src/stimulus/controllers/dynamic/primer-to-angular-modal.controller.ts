@@ -30,16 +30,17 @@
 
 import { Controller } from '@hotwired/stimulus';
 import { from, filter, take } from 'rxjs';
+import { OpenProjectPluginContext } from 'core-app/features/plugins/plugin-context';
 
 export default class PrimerToAngularModalController extends Controller {
   close(event:CustomEvent):void {
-    from(window.OpenProject.getPluginContext())
+    from(window.OpenProject.getPluginContext() as Promise<OpenProjectPluginContext>)
       .pipe(
         take(1),
-        filter((context) => context.services.opModalService?.activeModalInstance$ !== null),
+        filter((context) => context.services?.opModalService?.activeModalInstance$ !== null),
       )
       .subscribe((context) => {
-        context.services.opModalService.activeModalInstance$.value?.closeMe(event);
+        context.services?.opModalService?.activeModalInstance$?.value?.closeMe(event);
       });
   }
 }

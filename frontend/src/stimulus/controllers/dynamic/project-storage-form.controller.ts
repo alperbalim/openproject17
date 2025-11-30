@@ -149,7 +149,7 @@ export default class ProjectStorageFormController extends Controller {
   }
 
   protected get pluginContext():Observable<OpenProjectPluginContext> {
-    return from(window.OpenProject.getPluginContext());
+    return from(window.OpenProject.getPluginContext() as Promise<OpenProjectPluginContext>);
   }
 
   protected get OutletTarget():PortalOutletTarget {
