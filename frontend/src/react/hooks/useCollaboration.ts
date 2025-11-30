@@ -43,7 +43,7 @@ function useConnectionTimeout(provider:HocuspocusProvider | undefined, timeoutMs
 
     if (provider.synced) {
       setHasTimedOut(false);
-      return;
+      return undefined;
     }
 
     timeoutRef.current = setTimeout(() => {
