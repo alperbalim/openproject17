@@ -51,6 +51,14 @@ module Documents
             I18n.t("documents.active_editors_count", count: users.count).html_safe
           ]
         end
+
+        def avatar_options_for(user)
+          {
+            src: avatar_url(user),
+            alt: user.name,
+            unique_id: user.id
+          }
+        end
       end
     end
   end

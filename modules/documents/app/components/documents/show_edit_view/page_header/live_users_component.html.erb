@@ -46,7 +46,7 @@
               data: { "documents--live-events-target": "users" }
             ) do |component|
               users.map do |user|
-                component.with_avatar(src: avatar_url(user), alt: user.name)
+                component.with_avatar(**avatar_options_for(user))
               end
             end
           end
@@ -65,14 +65,12 @@
           component.with_body(caret: :top_left) do
             flex_layout do |container|
               users.each do |user|
-                container.with_row do
-                  render Users::AvatarComponent.new(
-                    user: user,
-                    show_name: true,
-                    link: false,
-                    hover_card: { active: false },
-                    size: :mini
-                  )
+                container.with_column do
+                  render Primer::Beta::Avatar.new(**avatar_options_for(user))
+                end
+
+                container.with_column(ml: 2) do
+                  render(Primer::Beta::Text.new(color: :subtle)) { user.name }
                 end
               end
             end
