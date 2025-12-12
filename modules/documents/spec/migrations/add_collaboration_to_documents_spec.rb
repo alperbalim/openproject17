@@ -53,6 +53,11 @@ RSpec.describe AddCollaborationToDocuments, type: :model do
         end
       end
 
+      after do
+        # Ensure cache is cleared after migration spec to prevent contaminating subsequent tests
+        ActiveRecord::Base.connection.clear_cache!
+      end
+
       it "sets existing documents to 'classic' kind" do
         ActiveRecord::Migration.suppress_messages { described_class.new.migrate(:up) }
 
@@ -60,17 +65,6 @@ RSpec.describe AddCollaborationToDocuments, type: :model do
         expect(doc2.reload.kind).to eq("classic")
         expect(doc3.reload.kind).to eq("classic")
         expect(doc4.reload.kind).to eq("classic")
-      end
-
-      context "when block note feature is active", with_flag: { block_note_editor: true } do
-        it "sets existing documents to 'classic' kind and 'collaborative' kind for experimental documents" do
-          ActiveRecord::Migration.suppress_messages { described_class.new.migrate(:up) }
-
-          expect(doc1.reload.kind).to eq("classic")
-          expect(doc2.reload.kind).to eq("classic")
-          expect(doc3.reload.kind).to eq("classic")
-          expect(doc4.reload.kind).to eq("collaborative")
-        end
       end
     end
   end

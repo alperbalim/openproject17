@@ -30,7 +30,7 @@
 
 require "rails_helper"
 
-RSpec.describe "BlockNote editor rendering", :js, with_flag: { block_note_editor: true } do
+RSpec.describe "BlockNote editor rendering", :js do
   let(:admin) { create(:admin) }
   let(:type) { create(:document_type, :experimental) }
   let(:document) { create(:document, type:) }
@@ -38,31 +38,16 @@ RSpec.describe "BlockNote editor rendering", :js, with_flag: { block_note_editor
 
   before do
     login_as(admin)
-  end
 
-  it "renders the BlockNote editor when editting a document" do
-    visit edit_document_path(document)
-
-    expect(page).to have_field("Type", required: true)
-    expect(page).to have_field("Title", required: true)
-
-    expect(page).to have_test_selector("blocknote-document-description")
-    expect(page).to have_css(".block-note-editor-container")
-
-    description_field = page.find_test_selector("blocknote-document-description")
-    description_field.click
-    description_field.send_keys("Additional text")
-
-    click_on("Save")
-
-    visit edit_document_path(document)
-
-    expect(page).to have_test_selector("blocknote-document-description", text: "Additional text")
+    # This is here while we don't have a setting defined for enabling/disabling collaboration
+    # rubocop:disable RSpec/AnyInstance
+    allow_any_instance_of(Primer::OpenProject::Forms::BlockNoteEditor).to receive(:collaboration_enabled).and_return(false)
+    # rubocop:enable RSpec/AnyInstance
   end
 
   it "renders the BlockNote editor in the users locale" do
     admin.update!(language: "de")
-    visit edit_document_path(document)
+    visit document_path(document)
 
     expect(page).to have_test_selector("blocknote-document-description")
     expect(page).to have_no_content("Überschrift")
@@ -73,7 +58,7 @@ RSpec.describe "BlockNote editor rendering", :js, with_flag: { block_note_editor
 
   it "renders the BlockNote editor in english if the users locale is not available for BlockNote" do
     admin.update!(language: "af")
-    visit edit_document_path(document)
+    visit document_path(document)
 
     expect(page).to have_test_selector("blocknote-document-description")
     expect(page).to have_no_content("Heading")
@@ -83,10 +68,10 @@ RSpec.describe "BlockNote editor rendering", :js, with_flag: { block_note_editor
   end
 
   it "renders the BlockNote editor with custom menu entries for work package linking" do
-    visit edit_document_path(document)
+    visit document_path(document)
 
     expect(page).to have_test_selector("blocknote-document-description")
-    editor.send_keys("/openproject")
-    expect(page).to have_content("Search and link an existing Work Package")
+    editor.fill_in_with_content("/openproject")
+    expect(page).to have_content("Link to existing work package")
   end
 end

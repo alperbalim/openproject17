@@ -91,6 +91,7 @@ module OpenProject::Meeting
                      meetings: %i[change_state exit_draft_mode_dialog exit_draft_mode],
                      meeting_agenda_items: %i[new cancel_new create edit cancel_edit update destroy drop move
                                               move_to_next_meeting move_to_next_meeting_dialog
+                                              duplicate_in_next_meeting duplicate_in_next_meeting_dialog
                                               move_to_section move_to_section_dialog],
                      meeting_sections: %i[new cancel_new create edit cancel_edit update destroy drop move
                                           clear_backlog clear_backlog_dialog]
@@ -126,6 +127,7 @@ module OpenProject::Meeting
            :meetings,
            { tab: :meetings },
            skip_permissions_check: true,
+           after: :relations,
            if: ->(_project) {
              User.current.allowed_in_any_project?(:view_meetings)
            },
@@ -165,11 +167,6 @@ module OpenProject::Meeting
       end
     end
 
-    initializer "openproject-meetings.feature_decisions" do
-      OpenProject::FeatureDecisions.add :meeting_ical_subscription,
-                                        description: "Allows users to subscribe to all of their meetings via iCalendar"
-    end
-
     activity_provider :meetings, class_name: "Activities::MeetingActivityProvider", default: false
 
     patches [:Project]
@@ -177,8 +174,9 @@ module OpenProject::Meeting
 
     replace_principal_references "Meeting" => %i[author_id],
                                  "MeetingAgendaItem" => %i[author_id presenter_id],
+                                 "MeetingOutcome" => :author_id,
                                  "MeetingParticipant" => :user_id,
-                                 "MeetingOutcome" => :author_id
+                                 "RecurringMeeting" => :author_id
 
     extend_api_response(:v3, :work_packages, :work_package,
                         &::OpenProject::Meeting::Patches::API::WorkPackageRepresenter.extension)

@@ -44,6 +44,8 @@ gem "responders", "~> 3.2"
 
 gem "ffi", "~> 1.15"
 
+gem "connection_pool", "~> 2.5.5"
+
 gem "rdoc", ">= 2.4.2"
 
 gem "doorkeeper", "~> 5.8.0"
@@ -65,7 +67,7 @@ gem "scimitar", "~> 2.13"
 gem "acts_as_list", "~> 1.2.6"
 gem "acts_as_tree", "~> 2.9.0"
 gem "awesome_nested_set", "~> 3.8.0"
-gem "closure_tree", "~> 9.2.0"
+gem "closure_tree", "~> 9.3.0"
 gem "rubytree", "~> 2.1.0"
 
 gem "addressable", "~> 2.8.0"
@@ -83,7 +85,7 @@ gem "htmldiff"
 gem "stringex", "~> 2.8.5"
 
 # CommonMark markdown parser with GFM extension
-gem "commonmarker", "~> 2.5.0"
+gem "commonmarker", "~> 2.6.0"
 
 # HTML pipeline for transformations on text formatter output
 # such as sanitization or additional features
@@ -137,7 +139,7 @@ gem "rack-attack", "~> 6.8.0"
 gem "browser", "~> 6.2.0"
 
 # Providing health checks
-gem "okcomputer", "~> 1.19.0"
+gem "okcomputer", "~> 1.19.1"
 
 # Lograge to provide sane and non-verbose logging
 gem "lograge", "~> 0.14.0"
@@ -149,7 +151,7 @@ gem "structured_warnings", "~> 0.5.0"
 # don't require by default, instead load on-demand when actually configured
 gem "airbrake", "~> 13.0.0", require: false
 
-gem "markly", "~> 0.14" # another markdown parser like commonmarker, but with AST support used in PDF export
+gem "markly", "~> 0.15" # another markdown parser like commonmarker, but with AST support used in PDF export
 gem "md_to_pdf", git: "https://github.com/opf/md-to-pdf", ref: "6c565541bfa390c58d90d49aa9b487777704fc66"
 gem "prawn", "~> 2.4"
 gem "ttfunk", "~> 1.7.0" # remove after https://github.com/prawnpdf/prawn/issues/1346 resolved.
@@ -177,7 +179,7 @@ group :production do
 end
 
 gem "i18n-js", "~> 4.2.4"
-gem "rails-i18n", "~> 8.0.0"
+gem "rails-i18n", "~> 8.1.0"
 
 gem "sprockets", "~> 3.7.2" # lock sprockets below 4.0
 gem "sprockets-rails", "~> 3.5.1"
@@ -192,13 +194,13 @@ gem "carrierwave", "~> 1.3.4"
 gem "carrierwave_direct", "~> 2.1.0"
 gem "fog-aws"
 
-gem "aws-sdk-core", "~> 3.237"
+gem "aws-sdk-core", "~> 3.239"
 # File upload via fog + screenshots on travis
-gem "aws-sdk-s3", "~> 1.203"
+gem "aws-sdk-s3", "~> 1.205"
 
-gem "openproject-token", "~> 8.1.0"
+gem "openproject-token", "~> 8.2.0"
 
-gem "plaintext", "~> 0.3.2"
+gem "plaintext", "~> 0.3.7"
 
 gem "ruby-progressbar", "~> 1.13.0", require: false
 
@@ -231,6 +233,8 @@ gem "opentelemetry-sdk", "~> 1.10", require: false
 gem "view_component", "~> 4.1.1"
 # Lookbook
 gem "lookbook", "2.3.13"
+
+gem "inline_svg", "~> 1.10.0"
 
 # Require factory_bot for usage with openproject plugins testing
 gem "factory_bot", "~> 6.5.6", require: false
@@ -282,7 +286,7 @@ group :test do
   gem "rails-controller-testing", "~> 1.0.2"
 
   gem "capybara", "~> 3.40.0"
-  gem "capybara_accessible_selectors", git: "https://github.com/citizensadvice/capybara_accessible_selectors", tag: "v0.14.0"
+  gem "capybara_accessible_selectors", git: "https://github.com/citizensadvice/capybara_accessible_selectors", tag: "v0.15.0"
   gem "capybara-screenshot", "~> 1.0.17"
   gem "cuprite", "~> 0.17.0"
   gem "rspec-wait"
@@ -354,7 +358,7 @@ group :development, :test do
   gem "rubocop-factory_bot", require: false
   gem "rubocop-openproject", require: false
   gem "rubocop-performance", require: false
-  gem "rubocop-rails", "= 2.33.3", require: false # 2.33.4 has issues with Rails/ActionControllerFlashBeforeRender
+  gem "rubocop-rails", "2.34.2", require: false # 2.33.4 has issues with Rails/ActionControllerFlashBeforeRender
   gem "rubocop-rspec", require: false
   gem "rubocop-rspec_rails", require: false
 
@@ -366,13 +370,13 @@ group :development, :test do
   gem "brakeman", "~> 7.1.1"
 
   # i18n-tasks helps find and manage missing and unused translations.
-  gem "i18n-tasks", "~> 1.0.13", require: false
+  gem "i18n-tasks", "~> 1.1.0", require: false
 
   # Active Record Doctor helps to keep the database in good shape.
   gem "active_record_doctor", "~> 2.0.1"
 end
 
-gem "bootsnap", "~> 1.18.0", require: false
+gem "bootsnap", "~> 1.19.0", require: false
 
 # API gems
 gem "grape", "~> 2.4.0"
@@ -415,6 +419,6 @@ gemfiles.each do |file|
   send(:eval_gemfile, file) if File.readable?(file)
 end
 
-gem "openproject-octicons", "~>19.30.1"
-gem "openproject-octicons_helper", "~>19.30.1"
-gem "openproject-primer_view_components", "~>0.77.0"
+gem "openproject-octicons", "~>19.32.0"
+gem "openproject-octicons_helper", "~>19.32.0"
+gem "openproject-primer_view_components", "~>0.78.1"

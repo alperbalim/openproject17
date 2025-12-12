@@ -55,6 +55,11 @@ RSpec.describe "Upload attachment to documents",
 
   before do
     login_as(user)
+
+    # This is here while we don't have a setting defined for enabling/disabling collaboration
+    # rubocop:disable RSpec/AnyInstance
+    allow_any_instance_of(Primer::OpenProject::Forms::BlockNoteEditor).to receive(:collaboration_enabled).and_return(false)
+    # rubocop:enable RSpec/AnyInstance
   end
 
   shared_examples "can upload an image in CKEditor" do
@@ -152,18 +157,13 @@ RSpec.describe "Upload attachment to documents",
     it "is possible to upload attachments from the editor" do
       expect(page).to have_no_css("img[alt='image.png']")
       editor.open_add_image_dialog
+
       expect do
         attach_file(image_fixture.path, make_visible: true) do
           find(:button, text: "Upload image").click
         end
         expect(page).to have_css("img[alt='image.png'][src*='/api/v3/attachments/']")
       end.to change { document.attachments.count }.by(1)
-
-      click_on "Save"
-      expect_flash(message: "Successful update.")
-
-      visit edit_document_path(document)
-      expect(page).to have_css("img[alt='image.png'][src*='/api/v3/attachments/']")
     end
   end
 
@@ -199,7 +199,7 @@ RSpec.describe "Upload attachment to documents",
       let!(:attachment) { create(:attachment, filename: "test.jpg", container: document) }
 
       before do
-        visit edit_document_path(document)
+        visit document_path(document)
       end
 
       it "is possible to delete attachments from the sidebar" do
@@ -212,15 +212,14 @@ RSpec.describe "Upload attachment to documents",
     end
   end
 
-  context "for collaborative documents", with_flag: { block_note_editor: true } do
-    let(:experimental_type) { create(:document_type, :experimental) }
-    let(:document) { create(:document, type: experimental_type, project:) }
+  context "for collaborative documents" do
+    let(:document) { create(:document, project:) }
     let(:editor) { FormFields::Primerized::BlockNoteEditorInput.new }
     let(:attachments_list) { Components::AttachmentsList.new }
 
     before do
       DocumentType.destroy_all
-      visit edit_document_path(document)
+      visit document_path(document)
       expect(page).to have_css(".document-form--long-description") # rubocop:disable RSpec/ExpectInHook
       expect(page).not_to have_element("opce-ckeditor-augmented-textarea") # rubocop:disable RSpec/ExpectInHook
     end

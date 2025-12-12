@@ -41,6 +41,7 @@ module IncomingEmails
     # Registry for mail handlers
     def self.handlers
       @handlers ||= [
+        IncomingEmails::Handlers::MeetingResponse,
         IncomingEmails::Handlers::MessageReply,
         IncomingEmails::Handlers::WorkPackage
       ]
@@ -147,7 +148,7 @@ module IncomingEmails
     # If the user is not found, we will handle using the given unkown_user option
     def determine_actor
       if sender_email.present?
-        @user = User.find_by_mail(sender_email) # rubocop:disable Rails/DynamicFindBy
+        @user = User.find_by_mail(sender_email)
       end
 
       # If the user is still not set, we have to deal with an unkonwn user

@@ -45,8 +45,13 @@ module Admin
           model.id
         end
 
-        def short_text
-          "(#{model.short})"
+        def secondary_text
+          ::CustomFields::Hierarchy::HierarchicalItemFormatter
+            .new(label: false,
+                 number_length_limit: 42,
+                 number_integer_digit_limit: 40,
+                 number_precision: 40)
+            .format(item: model)
         end
 
         def item_link
@@ -56,14 +61,6 @@ module Admin
             admin_settings_project_custom_field_item_path(custom_field.id, model)
           else
             custom_field_item_path(custom_field.id, model)
-          end
-        end
-
-        def secondary_text
-          if model.short.present?
-            "(#{model.short})"
-          elsif model.weight.present?
-            model.weight.to_s
           end
         end
 

@@ -60,7 +60,7 @@ RSpec.describe Projects::CreateService, type: :model do
               roles: [new_project_role])
     end
 
-    context "current user is admin" do
+    context "when current user is admin" do
       it "does not add the user to the project" do
         allow(user)
           .to(receive(:admin?))
@@ -70,6 +70,31 @@ RSpec.describe Projects::CreateService, type: :model do
 
         expect(create_member_instance)
           .not_to(have_received(:call))
+      end
+    end
+
+    describe "project creation email" do
+      context "when enabled", with_settings: { new_project_send_confirmation_email: true } do
+        it "sends the email to the user" do
+          allow(ProjectMailer)
+            .to receive(:project_created)
+            .with(model_instance, user:)
+            .and_call_original
+
+          subject
+
+          expect(ProjectMailer).to have_received(:project_created)
+        end
+      end
+
+      context "when disabled", with_settings: { new_project_send_confirmation_email: false } do
+        it "does not send the email" do
+          allow(ProjectMailer).to receive(:project_created)
+
+          subject
+
+          expect(ProjectMailer).not_to have_received(:project_created)
+        end
       end
     end
 
@@ -500,6 +525,67 @@ RSpec.describe Projects::CreateService, type: :model do
                 cf_calculated.id => "6"
               )
             end
+          end
+        end
+      end
+
+      describe "custom user fields with role assignment" do
+        let(:user) { create(:admin) }
+
+        let(:project_role) { create(:project_role) }
+        let(:other_user) { create(:user) }
+        let!(:role_based_cf) do
+          create(:project_custom_field, :user, is_for_all: true, role_id: project_role.id)
+        end
+
+        let(:manage_memberships_service) do
+          instance_double(Projects::ManageMembershipsFromCustomFieldsService)
+        end
+
+        before do
+          User.current = user
+
+          allow(Projects::ManageMembershipsFromCustomFieldsService)
+            .to receive(:new)
+            .and_return(manage_memberships_service)
+
+          allow(manage_memberships_service).to receive(:call)
+        end
+
+        context "when not setting a user in a custom field that assigns roles" do
+          let(:project_attributes) do
+            {}
+          end
+
+          it "does not call the ManageMembershipsFromCustomFieldsService" do
+            subject
+
+            expect(Projects::ManageMembershipsFromCustomFieldsService)
+              .not_to have_received(:new)
+          end
+        end
+
+        context "when setting a user in a custom field that assigns roles" do
+          let(:project_attributes) do
+            {
+              custom_field_values: {
+                role_based_cf.id => other_user.id
+              }
+            }
+          end
+
+          it "calls the ManageMembershipsFromCustomFieldsService" do
+            subject
+
+            expect(Projects::ManageMembershipsFromCustomFieldsService).to have_received(:new).with(
+              user:,
+              project:,
+              custom_field: role_based_cf
+            )
+
+            expect(manage_memberships_service).to have_received(:call).with(
+              old_value: [], new_value: [other_user.id.to_s]
+            )
           end
         end
       end
