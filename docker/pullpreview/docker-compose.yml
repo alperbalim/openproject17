@@ -78,14 +78,14 @@ services:
       - db
 
   hocuspocus:
-    image: openproject/hocuspocus:main-defdb238
+    image: openproject/hocuspocus:latest
     depends_on:
       - web
     networks:
       - frontend
       - backend
     environment:
-      - ALLOWED_DOMAINS=${PULLPREVIEW_PUBLIC_DNS}
       - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - SECRET=secret12345
     expose:
       - "1234"
