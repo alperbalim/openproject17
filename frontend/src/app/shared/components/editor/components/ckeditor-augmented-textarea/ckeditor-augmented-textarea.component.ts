@@ -217,10 +217,7 @@ export class CkeditorAugmentedTextareaComponent extends UntilDestroyedMixin impl
       }
 
       if (this.turboMode) {
-        // If the form has a stimulus action defined, we ONLY want to submit it via stimulus
-        if (!this.formElement.dataset.action) {
-          navigator.submitForm(this.formElement, evt?.submitter || undefined);
-        }
+        navigator.submitForm(this.formElement, evt?.submitter || undefined);
       } else {
         this.formElement.requestSubmit(evt?.submitter);
       }
