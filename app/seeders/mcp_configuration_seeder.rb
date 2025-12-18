@@ -23,25 +23,54 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 # See COPYRIGHT and LICENSE files for more details.
 #++
+class McpConfigurationSeeder < Seeder
+  def seed_data!
+    seed_server_config if server_missing?
 
-module McpTools
-  class << self
-    def all
-      [
-        McpTools::SearchProject
-      ]
-    end
+    seed_tool_configs
+  end
 
-    def enabled
-      McpConfiguration.where(enabled: true).pluck(:identifier).filter_map { |name| tools_by_name[name] }
-    end
+  def applicable?
+    server_missing? || tools_missing?
+  end
 
-    def tools_by_name
-      all.index_by(&:qualified_name)
+  def not_applicable_message
+    "No seeding of additional MCP configuration necessary."
+  end
+
+  private
+
+  def seed_server_config
+    McpConfiguration.create!(
+      identifier: API::Mcp::CONFIGURATION_IDENTIFIER,
+      title: Setting.app_title,
+      description: "", # TODO
+      enabled: true
+    )
+  end
+
+  def seed_tool_configs
+    McpTools.all.each do |thing| # rubocop:disable Rails/FindEach
+      next if McpConfiguration.find_by(identifier: thing.qualified_name)
+
+      McpConfiguration.create!(
+        identifier: thing.qualified_name,
+        title: thing.default_title,
+        description: thing.default_description,
+        enabled: true
+      )
     end
+  end
+
+  def server_missing?
+    McpConfiguration.where(identifier: API::Mcp::CONFIGURATION_IDENTIFIER).empty?
+  end
+
+  def tools_missing?
+    (McpTools.all.map(&:qualified_name) - McpConfiguration.pluck(:identifier)).any?
   end
 end
