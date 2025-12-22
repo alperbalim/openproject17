@@ -74,9 +74,9 @@ See COPYRIGHT and LICENSE files for more details.
                       <%= token.query.project.name %>
                     </td>
                     <td>
-                        <span title="<%= format_time(token.created_at) %>">
+                        <time datetime="<%= token.created_at.iso8601 %>">
                           <%= format_time(token.created_at.to_s) %>
-                        </span>
+                        </time>
                     </td>
                     <td><%= t("my_account.access_tokens.indefinite_expiration") %></td>
                     <td class="buttons">
@@ -87,7 +87,8 @@ See COPYRIGHT and LICENSE files for more details.
                                       turbo_confirm: t("my_account.access_tokens.simple_revoke_confirmation"),
                                       test_selector: "ical-token-row-#{token.id}-revoke"
                                   },
-                                  class: "icon icon-delete" %>
+                                  class: "icon icon-delete",
+                                  "aria-label": t(:button_delete) %>
                     </td>
                   </tr>
                 <% end %>
