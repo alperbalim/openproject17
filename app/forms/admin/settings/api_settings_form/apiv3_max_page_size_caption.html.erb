@@ -1,0 +1,8 @@
+<%= render(Primer::Beta::Text.new(tag: :p)) do %>
+  <%= I18n.t(:setting_apiv3_max_page_size_instructions) %>
+<% end %>
+<%= render(Primer::Beta::Text.new(tag: :p, color: :attention, mb: 0)) do %>
+  <%= render(Primer::Beta::Octicon.new(icon: :"alert-fill", size: :xsmall, aria: { hidden: true })) %>
+  <%= render(Primer::Beta::Text.new(tag: :strong).with_content("#{I18n.t(:warning)}:")) %>
+  <%= I18n.t(:setting_apiv3_max_page_size_warning) %>
+<% end %>

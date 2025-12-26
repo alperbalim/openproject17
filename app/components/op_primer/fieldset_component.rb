@@ -28,40 +28,38 @@
 # See COPYRIGHT and LICENSE files for more details.
 #++
 
-# Decorates a form object to provide a more convenient interface for
-# rendering settings.
-#
-# It automatically sets the label, value, and disabled properties from the
-# setting name and its definition attributes.
-module Settings
-  class FormObjectDecorator < SimpleDelegator
-    include ::ApplicationHelper
-    include InputMethods
+module OpPrimer
+  class FieldsetComponent < Primer::Component
+    attr_reader :legend_text
 
-    # @!attribute [r] object
-    #   @return [Primer::Forms::Dsl::FormObject] the original form object
-    alias object __getobj__
+    renders_one :legend, ->(text:, **system_arguments) {
+      system_arguments = deny_tag_argument(**system_arguments)
+      system_arguments[:tag] = :legend
+      system_arguments[:classes] = class_names(
+        system_arguments[:classes],
+        { "sr-only" => @visually_hide_legend }
+      )
 
-    # @!method initialize(object)
-    #   Initializes a new {Settings::FormObjectDecorator}
-    #
-    #   @param object [Primer::Forms::Dsl::FormObject] The form object to be decorated
-    #   @return [FormObjectDecorator]
+      Primer::BaseComponent.new(**system_arguments).with_content(text)
+    }
 
-    # Creates a group for a setting
-    #
-    # @param ** [Hash] Additional options for the group
-    # @see Primer::Forms::Dsl::FormObject#group
-    def group(**, &)
-      object.group(**) do |g|
-        yield Settings::FormObjectDecorator.new(g)
-      end
+    # @param aria-label [String] String that can be read by assistive technology. A label should be short and concise. See the accessibility section for more information.
+    # @param system_arguments [Hash] <%= link_to_system_arguments_docs %>
+    def initialize(legend_text:, visually_hide_legend: false, **system_arguments)
+      super()
+
+      @legend_text = legend_text
+
+      @system_arguments = deny_tag_argument(**system_arguments)
+      @system_arguments[:tag] = :fieldset
+
+      validate_aria_label if visually_hide_legend
+
+      @visually_hide_legend = visually_hide_legend
     end
 
-    def fieldset_group(**, &)
-      object.fieldset_group(**) do |g|
-        yield Settings::FormObjectDecorator.new(g)
-      end
+    def render?
+      content? && (legend_text.present? || legend?)
     end
   end
 end
