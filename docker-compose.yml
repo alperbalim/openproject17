@@ -85,15 +85,21 @@ services:
   frontend:
     build:
       <<: *frontend-build
-    # ✅ node_modules boşsa otomatik kur, sonra ng serve
+    # ✅ chown -> npm ci/install -> ng serve
+    user: "0:0"
     command: >
       bash -lc "
-        cd /home/dev/openproject/frontend &&
-        if [ ! -f node_modules/@angular/cli/bin/ng ]; then
-          echo '[frontend] node_modules missing -> installing...';
-          (npm ci || npm install);
-        fi &&
-        node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0
+        set -e;
+        mkdir -p /home/dev/openproject/frontend/node_modules /home/dev/openproject/node_modules;
+        chown -R ${DEV_UID:-1000}:${DEV_GID:-1000} /home/dev/openproject/frontend/node_modules /home/dev/openproject/node_modules;
+        su - dev -c '
+          cd /home/dev/openproject/frontend &&
+          if [ ! -f node_modules/@angular/cli/bin/ng ]; then
+            echo \"[frontend] node_modules missing -> installing...\";
+            (npm ci || npm install);
+          fi &&
+          node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0
+        '
       "
     volumes:
       - ".:/home/dev/openproject"
@@ -104,7 +110,6 @@ services:
       - network
     environment:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: "openproject-assets.local"
-    # ports yok (Dokploy ingress)
 
   db:
     image: postgres:17
@@ -144,15 +149,20 @@ services:
     profiles: ["test"]
     build:
       <<: *frontend-build
-    # ✅ node_modules boşsa otomatik kur, sonra serve
+    user: "0:0"
     command: >
       bash -lc "
-        cd /home/dev/openproject/frontend &&
-        if [ ! -f node_modules/@angular/cli/bin/ng ]; then
-          echo '[frontend-test] node_modules missing -> installing...';
-          (npm ci || npm install);
-        fi &&
-        npm run serve
+        set -e;
+        mkdir -p /home/dev/openproject/frontend/node_modules /home/dev/openproject/node_modules;
+        chown -R ${DEV_UID:-1000}:${DEV_GID:-1000} /home/dev/openproject/frontend/node_modules /home/dev/openproject/node_modules;
+        su - dev -c '
+          cd /home/dev/openproject/frontend &&
+          if [ ! -f node_modules/@angular/cli/bin/ng ]; then
+            echo \"[frontend-test] node_modules missing -> installing...\";
+            (npm ci || npm install);
+          fi &&
+          npm run serve
+        '
       "
     volumes:
       - ".:/home/dev/openproject"
