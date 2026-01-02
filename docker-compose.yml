@@ -73,7 +73,7 @@ services:
       - db
       - cache
       - frontend
-    # ❌ ports kaldırıldı – Dokploy ingress kullanacak
+    # ports yok (Dokploy ingress)
 
   worker:
     <<: *backend
@@ -85,7 +85,16 @@ services:
   frontend:
     build:
       <<: *frontend-build
-    command: "node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0"
+    # ✅ node_modules boşsa otomatik kur, sonra ng serve
+    command: >
+      bash -lc "
+        cd /home/dev/openproject/frontend &&
+        if [ ! -f node_modules/@angular/cli/bin/ng ]; then
+          echo '[frontend] node_modules missing -> installing...';
+          (npm ci || npm install);
+        fi &&
+        node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0
+      "
     volumes:
       - ".:/home/dev/openproject"
       - "frontend-node-modules:/home/dev/openproject/frontend/node_modules"
@@ -95,7 +104,7 @@ services:
       - network
     environment:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: "openproject-assets.local"
-    # ❌ ports kaldırıldı
+    # ports yok (Dokploy ingress)
 
   db:
     image: postgres:17
@@ -116,9 +125,10 @@ services:
     networks:
       - network
 
-######### Testing stuff below ############
+######### Testing stuff below (✅ profile ile devre dışı) ############
 
   db-test:
+    profiles: ["test"]
     image: postgres:17
     stop_grace_period: "3s"
     volumes:
@@ -131,9 +141,19 @@ services:
       - testing
 
   frontend-test:
+    profiles: ["test"]
     build:
       <<: *frontend-build
-    command: "npm run serve"
+    # ✅ node_modules boşsa otomatik kur, sonra serve
+    command: >
+      bash -lc "
+        cd /home/dev/openproject/frontend &&
+        if [ ! -f node_modules/@angular/cli/bin/ng ]; then
+          echo '[frontend-test] node_modules missing -> installing...';
+          (npm ci || npm install);
+        fi &&
+        npm run serve
+      "
     volumes:
       - ".:/home/dev/openproject"
       - "frontend-node-modules:/home/dev/openproject/frontend/node_modules"
@@ -150,6 +170,7 @@ services:
       test: ["CMD", "curl", "-f", "http://frontend-test:4200/"]
 
   backend-test:
+    profiles: ["test"]
     build:
       <<: *build
       target: test
@@ -189,6 +210,7 @@ services:
       - "./tmp/capybara:/home/dev/openproject/tmp/capybara"
 
   selenium-hub:
+    profiles: ["test"]
     image: selenium/hub:4
     container_name: selenium-hub
     hostname: selenium-hub
@@ -201,6 +223,7 @@ services:
       - testing
 
   chrome:
+    profiles: ["test"]
     image: selenium/node-chrome:4
     volumes:
       - /dev/shm:/dev/shm
@@ -218,6 +241,7 @@ services:
       NODE_MAX_SESSION: "${CI_JOBS:-4}"
 
   firefox:
+    profiles: ["test"]
     image: selenium/node-firefox:4
     volumes:
       - /dev/shm:/dev/shm
@@ -235,6 +259,7 @@ services:
       NODE_MAX_SESSION: "${CI_JOBS:-4}"
 
   cuprite-chrome:
+    profiles: ["test"]
     image: ghcr.io/browserless/chrome:latest
     networks:
       - testing
