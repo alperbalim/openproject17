@@ -12,24 +12,30 @@ volumes:
   pgdata-test:
   tmp-test:
   fedata-test:
+  frontend-node-modules:
+  root-node-modules:
 
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
+
 x-op-build: &build
   context: .
   dockerfile: ./docker/dev/backend/Dockerfile
   args:
     DEV_UID: $DEV_UID
     DEV_GID: $DEV_GID
+
 x-op-image: &image
   image:
     openproject/dev:latest
+
 x-op-frontend-build: &frontend-build
   context: .
   dockerfile: ./docker/dev/frontend/Dockerfile
   args:
     DEV_UID: $DEV_UID
     DEV_GID: $DEV_GID
+
 x-op-backend: &backend
   build:
     <<: *build
@@ -67,8 +73,7 @@ services:
       - db
       - cache
       - frontend
-    ports:
-      - "${PORT:-3000}:3000"
+    # ❌ ports kaldırıldı – Dokploy ingress kullanacak
 
   worker:
     <<: *backend
@@ -83,13 +88,14 @@ services:
     command: "node --max_old_space_size=8096 ./node_modules/@angular/cli/bin/ng serve --host 0.0.0.0"
     volumes:
       - ".:/home/dev/openproject"
+      - "frontend-node-modules:/home/dev/openproject/frontend/node_modules"
+      - "root-node-modules:/home/dev/openproject/node_modules"
       - "${CKEDITOR_BUILD_DIR:-./frontend/src/vendor/ckeditor/}:/home/dev/openproject/frontend/src/vendor/ckeditor/"
     networks:
       - network
     environment:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: "openproject-assets.local"
-    ports:
-      - "${FE_PORT:-4200}:4200"
+    # ❌ ports kaldırıldı
 
   db:
     image: postgres:17
@@ -130,6 +136,8 @@ services:
     command: "npm run serve"
     volumes:
       - ".:/home/dev/openproject"
+      - "frontend-node-modules:/home/dev/openproject/frontend/node_modules"
+      - "root-node-modules:/home/dev/openproject/node_modules"
       - "fedata-test:/home/dev/openproject/public/assets/frontend"
     environment:
       PROXY_HOSTNAME: backend-test
@@ -180,7 +188,6 @@ services:
       - "tmp-test:/home/dev/openproject/tmp"
       - "./tmp/capybara:/home/dev/openproject/tmp/capybara"
 
-  # https://vitobotta.com/2019/09/04/rails-parallel-system-tests-selenium-docker/
   selenium-hub:
     image: selenium/hub:4
     container_name: selenium-hub
@@ -207,7 +214,6 @@ services:
       SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
       SCREEN_WIDTH: 1920
       SCREEN_HEIGHT: 1080
-      # in case we want multiple sessions per container
       NODE_MAX_INSTANCES: "${CI_JOBS:-4}"
       NODE_MAX_SESSION: "${CI_JOBS:-4}"
 
@@ -225,18 +231,13 @@ services:
       SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
       SCREEN_WIDTH: 1920
       SCREEN_HEIGHT: 1080
-      # in case we want multiple sessions per container
       NODE_MAX_INSTANCES: "${CI_JOBS:-4}"
       NODE_MAX_SESSION: "${CI_JOBS:-4}"
 
   cuprite-chrome:
-    # Currently, Apple M1 is only supported in unnumbered "latest" versions.
-    # See https://github.com/browserless/chrome/issues/1393
     image: ghcr.io/browserless/chrome:latest
     networks:
       - testing
     environment:
       HOST: cuprite-chrome
-      # Set connection timeout to avoid timeout exception during debugging
-      # https://docs.browserless.io/docs/docker.html#connection-timeout
       CONNECTION_TIMEOUT: 600000
